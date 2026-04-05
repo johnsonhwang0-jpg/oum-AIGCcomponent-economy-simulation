@@ -316,7 +316,7 @@ export function Stage2({ state, updateState, nextStage }: StageProps) {
         </div>
       </div>
 
-      <div className="glass-card space-y-8 bg-[#524033] text-white shadow-xl">
+      <div className="dark-stat-card space-y-8 shadow-xl">
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
             <HelpCircle className="w-6 h-6 text-white" />
@@ -411,10 +411,10 @@ export function Stage3({ state, updateState, nextStage }: StageProps) {
             className={`stat-card text-left flex gap-6 items-center transition-all border-2 ${
               submitted 
                 ? (choice === opt.id 
-                    ? (opt.id === 'C' ? 'border-green-500 bg-green-50' : 'border-red-500 bg-red-50')
-                    : (opt.id === 'C' ? 'border-green-500 bg-green-50' : 'border-brand-border'))
+                    ? (opt.id === 'C' ? 'border-green-600 bg-green-50 shadow-md shadow-green-100 ring-2 ring-green-300' : 'border-red-600 bg-red-50 shadow-md shadow-red-100 ring-2 ring-red-300')
+                    : (opt.id === 'C' ? 'border-green-600 bg-green-50 shadow-md shadow-green-100' : 'border-brand-border'))
                 : (choice === opt.id 
-                    ? 'border-brand-brown bg-brand-card ring-2 ring-brand-brown/20' 
+                    ? 'border-brand-brown bg-brand-card shadow-lg shadow-brand-brown/20 ring-2 ring-brand-brown/20' 
                     : 'hover:border-brand-brown border-brand-border')
             }`}
           >
@@ -440,20 +440,20 @@ export function Stage3({ state, updateState, nextStage }: StageProps) {
       )}
 
       {submitted && (
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="glass-card space-y-8 bg-[#fdfcf7]">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className={`space-y-8 rounded-3xl p-8 shadow-sm ${choice === 'C' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'}`}>
           <div className="flex items-center gap-6">
-            <div className={`w-16 h-16 rounded-2xl flex items-center justify-center text-3xl ${choice === 'C' ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}`}>
+            <div className={`w-16 h-16 rounded-2xl flex items-center justify-center text-3xl ${choice === 'C' ? 'bg-white text-green-600' : 'bg-white text-red-600'}`}>
               {choice === 'C' ? '🎉' : '😅'}
             </div>
             <div>
-              <h3 className="text-2xl font-bold text-brand-brown">{choice === 'C' ? 'Perfect Classification!' : 'Not Quite Right.'}</h3>
-              <p className="text-stone-500 leading-relaxed max-w-2xl">
+              <h3 className="text-2xl font-bold">{choice === 'C' ? 'Perfect Classification!' : 'Not Quite Right.'}</h3>
+              <p className="text-white/80 leading-relaxed max-w-2xl">
                 1.73 is greater than 1, so your coffee is <strong>Elastic</strong>. This means lowering the price significantly boosts volume, potentially increasing total revenue.
               </p>
             </div>
           </div>
           <div className="flex justify-end">
-            <button onClick={nextStage} className="btn-primary px-12">
+            <button onClick={nextStage} className="px-12 py-4 bg-white text-brand-brown rounded-xl font-bold transition-all hover:bg-stone-100 active:scale-95 flex items-center justify-center gap-2">
               Model the Demand Curve <ArrowRight className="w-5 h-5" />
             </button>
           </div>
