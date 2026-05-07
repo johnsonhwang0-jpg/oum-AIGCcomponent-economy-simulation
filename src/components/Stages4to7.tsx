@@ -26,6 +26,7 @@ import {
 
 export function Stage4({ state, updateState, nextStage }: StageProps) {
   const [fitted, setFitted] = useState(false);
+  const [derivationStep, setDerivationStep] = useState(0);
 
   const handleFit = () => {
     updateState({ 
@@ -33,12 +34,16 @@ export function Stage4({ state, updateState, nextStage }: StageProps) {
       scores: { ...state.scores, stage4: 15 }
     });
     setFitted(true);
+    // Animate derivation steps one by one
+    setTimeout(() => setDerivationStep(1), 300);
+    setTimeout(() => setDerivationStep(2), 900);
+    setTimeout(() => setDerivationStep(3), 1500);
   };
 
   const data = [
     { p: 3.0, q: 308 },
     { p: 3.5, q: 242 },
-    { p: 4.0, q: 205 },
+    { p: 4.0, q: 200 },
     { p: 4.5, q: 142 },
     { p: 5.0, q: 108 },
   ];
@@ -68,10 +73,28 @@ export function Stage4({ state, updateState, nextStage }: StageProps) {
           </div>
           <div className="h-80 w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <ComposedChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+              <ComposedChart margin={{ top: 20, right: 20, bottom: 36, left: 46 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e4e2d3" />
-                <XAxis type="number" dataKey="p" name="Price" unit="$" domain={[2, 6]} stroke="#a8a29e" fontSize={10} />
-                <YAxis type="number" dataKey="q" name="Quantity" unit="u" domain={[0, 400]} stroke="#a8a29e" fontSize={10} />
+                <XAxis
+                  type="number"
+                  dataKey="p"
+                  name="Price"
+                  unit="$"
+                  domain={[2, 6]}
+                  stroke="#a8a29e"
+                  fontSize={10}
+                  label={{ value: 'Price ($)', position: 'insideBottom', offset: -12, fill: '#78716c', fontSize: 11 }}
+                />
+                <YAxis
+                  type="number"
+                  dataKey="q"
+                  name="Quantity"
+                  unit="u"
+                  domain={[0, 400]}
+                  stroke="#a8a29e"
+                  fontSize={10}
+                  label={{ value: 'Demand (Units)', angle: -90, position: 'insideLeft', fill: '#78716c', fontSize: 11 }}
+                />
                 <ZAxis type="number" range={[100, 100]} />
                 <Tooltip cursor={{ strokeDasharray: '3 3' }} />
                 <Scatter name="Demand" data={data} fill="#463325" />
@@ -123,6 +146,92 @@ export function Stage4({ state, updateState, nextStage }: StageProps) {
           </div>
         </div>
       </div>
+
+      {fitted && (
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="glass-card space-y-6"
+        >
+          <div className="space-y-1">
+            <h3 className="text-xl font-bold text-brand-brown">How Was Q = 600 − 100P Derived?</h3>
+            <p className="text-sm text-stone-400">A linear demand function takes the form <span className="font-mono font-bold text-brand-brown">Q = b − mP</span>. Here's how we solved for the two unknowns using our data.</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Step 1 */}
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={derivationStep >= 1 ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.45 }}
+              className="rounded-2xl border border-brand-border bg-stone-50 p-5 space-y-3"
+            >
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 rounded-full bg-brand-brown text-white text-xs font-bold flex items-center justify-center">1</div>
+                <span className="text-[10px] font-bold uppercase tracking-widest text-stone-400">Calculate the Slope</span>
+              </div>
+              <p className="text-xs text-stone-500 leading-relaxed">
+                Pick any two data points and compute <span className="font-mono font-bold">ΔQ / ΔP</span>.
+              </p>
+              <div className="rounded-xl bg-white border border-brand-border p-3 font-mono text-sm space-y-1">
+                <div className="text-stone-400 text-xs">Points: ($3.00, 308) and ($5.00, 108)</div>
+                <div>slope = (108 − 308) / (5 − 3)</div>
+                <div>slope = −200 / 2</div>
+                <div className="font-bold text-brand-brown">slope = <span className="text-lg">−100</span></div>
+              </div>
+              <p className="text-xs text-stone-400">Every $1 price increase → 100 fewer units sold.</p>
+            </motion.div>
+
+            {/* Step 2 */}
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={derivationStep >= 2 ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.45 }}
+              className="rounded-2xl border border-brand-border bg-stone-50 p-5 space-y-3"
+            >
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 rounded-full bg-brand-brown text-white text-xs font-bold flex items-center justify-center">2</div>
+                <span className="text-[10px] font-bold uppercase tracking-widest text-stone-400">Solve the Intercept</span>
+              </div>
+              <p className="text-xs text-stone-500 leading-relaxed">
+                Plug the slope and one known point into <span className="font-mono font-bold">Q = b − 100P</span>.
+              </p>
+              <div className="rounded-xl bg-white border border-brand-border p-3 font-mono text-sm space-y-1">
+                <div className="text-stone-400 text-xs">Using point ($4.00, 200):</div>
+                <div>200 = b − 100 × 4</div>
+                <div>200 = b − 400</div>
+                <div className="font-bold text-brand-brown">b = <span className="text-lg">600</span></div>
+              </div>
+              <p className="text-xs text-stone-400">If price were $0, theoretical demand would be 600 units.</p>
+            </motion.div>
+
+            {/* Step 3 */}
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={derivationStep >= 3 ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.45 }}
+              className="rounded-2xl border border-brand-border bg-brand-brown p-5 space-y-3 text-white"
+            >
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 rounded-full bg-white text-brand-brown text-xs font-bold flex items-center justify-center">3</div>
+                <span className="text-[10px] font-bold uppercase tracking-widest text-white/50">The Demand Function</span>
+              </div>
+              <p className="text-xs text-white/70 leading-relaxed">
+                Substitute both constants back in to get the complete model.
+              </p>
+              <div className="rounded-xl bg-white/10 border border-white/20 p-4 text-center">
+                <div className="text-3xl font-bold tracking-tight">Q = 600 − 100P</div>
+              </div>
+              <div className="space-y-1 text-xs text-white/60">
+                <div className="flex justify-between"><span>Predicted @ P=$4.00</span><span className="font-bold text-white">600 − 100×4 = 200 ✓</span></div>
+                <div className="flex justify-between"><span>Predicted @ P=$3.00</span><span className="font-bold text-white">600 − 100×3 = 300 ≈ 308 ✓</span></div>
+                <div className="flex justify-between"><span>R² fit</span><span className="font-bold text-white">0.98</span></div>
+              </div>
+            </motion.div>
+          </div>
+        </motion.div>
+      )}
 
       {fitted && (
         <div className="flex justify-center">
@@ -197,7 +306,7 @@ export function Stage5({ state, updateState, nextStage }: StageProps) {
 
           <div className="h-80 w-full relative">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+              <AreaChart data={chartData} margin={{ top: 20, right: 20, bottom: 36, left: 46 }}>
                 <defs>
                   <linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#463325" stopOpacity={0.1}/>
@@ -205,8 +314,19 @@ export function Stage5({ state, updateState, nextStage }: StageProps) {
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e4e2d3" />
-                <XAxis dataKey="price" stroke="#a8a29e" fontSize={10} tickFormatter={(v) => `$${v.toFixed(2)}`} />
-                <YAxis stroke="#a8a29e" fontSize={10} tickFormatter={(v) => `$${v}`} />
+                <XAxis
+                  dataKey="price"
+                  stroke="#a8a29e"
+                  fontSize={10}
+                  tickFormatter={(v) => `$${v.toFixed(2)}`}
+                  label={{ value: 'Price ($)', position: 'insideBottom', offset: -12, fill: '#78716c', fontSize: 11 }}
+                />
+                <YAxis
+                  stroke="#a8a29e"
+                  fontSize={10}
+                  tickFormatter={(v) => `$${v}`}
+                  label={{ value: 'Revenue ($)', angle: -90, position: 'insideLeft', fill: '#78716c', fontSize: 11 }}
+                />
                 <Tooltip 
                   contentStyle={{ backgroundColor: '#463325', border: 'none', borderRadius: '12px', color: 'white' }}
                   itemStyle={{ color: 'white' }}
